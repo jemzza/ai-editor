@@ -105,19 +105,22 @@ Domain-протоколы не меняем. Общие для веток фай
 
 ### C. Экран Editor — `feat/editor` (~1 ч 45 мин, на фейках)
 
-Файлы: `AIEditor/Features/Editor/*`, `AIEditorTests/Features/EditorViewModelTests.swift`,
+Файлы: `AIEditor/Features/Editor/*`, `AIEditor/Features/Root/EditorTopBar.swift` (меню «⋯»),
+`AIEditorTests/Features/EditorViewModelTests.swift`,
 `AIEditorUITests/EditorUITests.swift`. Запуск: `scripts/sim.sh run -- -mockData -mockSlowStream`.
 
 - [ ] C.0 Прочитать свой подраздел UI-референса в `docs/task.md` (Editor) и скриншоты
   `docs/reference/quillbot/editor/`. Коротко пересказать, как будет выглядеть и работать
   результат. Если после этого что-то неясно — задать вопросы до кода. Если всё ясно — сразу начинать.
 - [ ] C.1 `EditorViewModel`: режим, тон/язык, исходник, счётчик слов, лимит длины,
-  run / stop / retry / copy / read aloud / dictation; `observeEdit` + черновик `EditSession`;
-  открытая из истории правка — её исходник, режим и результат. Тесты VM.
-- [ ] C.2 Верх: сегменты режимов; меню тона (Paraphrase) и языка (Translate).
+  run / stop / retry / regenerate / copy / read aloud / dictation / replace / delete;
+  `observeEdit` + черновик `EditSession`; открытая из истории правка — её исходник, режим и
+  результат. Тесты VM.
+- [ ] C.2 Верх: сегменты режимов; ряд кнопок-тонов (Paraphrase) и меню языка (Translate);
+  меню «⋯» в `EditorTopBar` (Copy text / Share / Delete с подтверждением).
 - [ ] C.3 Поле исходника: Paste, микрофон (диктовка), очистка, счётчик слов; главная кнопка.
-- [ ] C.4 Панель результата: стриминг, Stop / Copy / Read aloud, переключатель Compare
-  (на `dependencies.diff` — пока `StubWordDiff`).
+- [ ] C.4 Панель результата: стриминг, Stop / Copy / Regenerate / Read aloud / Replace,
+  переключатель Compare (на `dependencies.diff` — пока `StubWordDiff`; в Translate скрыт).
 - [ ] C.5 Состояния: пустой экран, ожидание первого токена, все ошибки с Retry
   (`-mockError 429|401|403|500`, `-mockOffline`), `interrupted`/`cancelled`.
 - [ ] C.6 Светлая/тёмная тема, Dynamic Type, iOS 18 (`scripts/sim.sh --ios18 run`) и 26, iPad.
@@ -160,11 +163,14 @@ Domain-протоколы не меняем. Общие для веток фай
 |---|---|---|
 | A `feat/prompts` | `Data/LLM/PromptBuilder.swift`, `Domain/Models/TranslationLanguage.swift`, `LLMConfig`, тесты промптов, строки в каталоге для языков/тонов | `Features/`, `Domain/Protocols` |
 | B `feat/diff` | `Domain/Services/WordDiff.swift`, `Features/Compare/`, тесты diff | `Features/Editor/`, `Domain/Protocols` |
-| C `feat/editor` | `Features/Editor/`, тесты/UI-тесты экрана | `Data/`, `Domain/` |
+| C `feat/editor` | `Features/Editor/`, `Features/Root/EditorTopBar.swift`, тесты/UI-тесты экрана | `Data/`, `Domain/` |
 
 Конфликт ожидаем только в `Localizable.xcstrings` — при слиянии: `scripts/sim.sh build`,
 `python3 scripts/sync_strings.py`, коммит каталога.
 
 ## Журнал отклонений от плана
 
-- (пусто)
+- 0.2 (референсы QuillBot): тон — ряд кнопок вместо меню; в панель результата добавлены
+  Regenerate и Replace; Compare скрыт в Translate; меню «⋯» (Copy text / Share / Delete)
+  в верхней панели — поэтому `Features/Root/EditorTopBar.swift` отдан ветке C. Подробности —
+  `docs/task.md`, «Референсы QuillBot».
