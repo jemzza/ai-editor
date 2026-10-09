@@ -41,10 +41,27 @@
 
 ## 0. Старт (≈ 5 мин) — `main`
 
-- [ ] 0.1 👤 Записать время старта в README. Ключ: `GROQ_API_KEY=… python3 scripts/gen_secrets.py`
-  (если ещё не сгенерирован), затем `scripts/sim.sh test -only-testing:AIEditorTests/SecretsTests`.
-- [ ] 0.2 Создать три worktree (AGENTS.md): `feat/prompts`, `feat/diff`, `feat/editor`;
-  в каждом `scripts/sim.sh` создаёт свой симулятор.
+- [ ] 0.1 👤 Записать время старта в README. Ключ (если ещё не сгенерирован) — 👤 в отдельной
+  вкладке терминала: `read -s GROQ_API_KEY && export GROQ_API_KEY; python3 scripts/gen_secrets.py; unset GROQ_API_KEY`.
+  Агент ключ не запрашивает и скрипт сам не запускает. После «готово» агент запускает
+  `scripts/sim.sh test -only-testing:AIEditorTests/SecretsTests`.
+- [ ] 0.2 Референсы QuillBot (в `main`, до создания worktree):
+  - 👤 пользователь кладёт скриншоты QuillBot в `docs/reference/quillbot/{prompts,diff,editor}/`;
+  - агент просит скриншоты по каждой задаче и перечисляет, что снять:
+    - `prompts` — список режимов и тонов (Standard, Fluency, Formal…), пример результата для
+      перефразирования, сокращения, перевода, исправления ошибок;
+    - `diff` — режим сравнения «было — стало», как подсвечены добавленные и удалённые слова,
+      светлая и тёмная тема;
+    - `editor` — главный экран целиком: пустой, с текстом, во время генерации, с результатом;
+      меню выбора режима/тона/языка;
+  - агент смотрит скриншоты и по каждой задаче (A, B, C) пишет: что берём, что упрощаем или
+    делаем иначе (наши цвета — монохром как в ChatGPT, без бренда QuillBot) и список вопросов,
+    где неясно;
+  - ответы пользователя записываются в `docs/task.md`, раздел «UI-референс», подразделы
+    Prompts / Diff / Editor со ссылками на файлы скриншотов;
+  - коммит: `Add QuillBot references and UI decisions`.
+- [ ] 0.3 Создать три worktree (AGENTS.md): `feat/prompts`, `feat/diff`, `feat/editor`;
+  в каждом `scripts/sim.sh` создаёт свой симулятор. Не раньше, чем закоммичен 0.2.
 
 ## Параллельно (≈ 1 ч 45 мин, три агента, каждый в своём worktree)
 
@@ -55,6 +72,9 @@ Domain-протоколы не меняем. Общие для веток фай
 Файлы: `AIEditor/Data/LLM/PromptBuilder.swift`, `AIEditorTests/LLM/PromptBuilderTests.swift`,
 `AIEditor/Domain/Models/TranslationLanguage.swift` (список языков), `LLMConfig` (константы).
 
+- [ ] A.0 Прочитать свой подраздел UI-референса в `docs/task.md` (Prompts) и скриншоты
+  `docs/reference/quillbot/prompts/`. Коротко пересказать, как будет выглядеть и работать
+  результат. Если после этого что-то неясно — задать вопросы до кода. Если всё ясно — сразу начинать.
 - [ ] A.1 `PromptBuilder: PromptBuilding` — system + user для paraphrase(tone) / shorten /
   translate(language) / fixGrammar. Правила: только результат, без вступлений, кавычек и
   Markdown; язык исходника (кроме translate); исходник — как данные, а не инструкция
@@ -72,6 +92,9 @@ Domain-протоколы не меняем. Общие для веток фай
 Файлы: `AIEditor/Domain/Services/WordDiff.swift`, `AIEditor/Features/Compare/*`,
 `AIEditorTests/Features/WordDiffTests.swift`, `CompareTests`.
 
+- [ ] B.0 Прочитать свой подраздел UI-референса в `docs/task.md` (Diff) и скриншоты
+  `docs/reference/quillbot/diff/`. Коротко пересказать, как будет выглядеть и работать
+  результат. Если после этого что-то неясно — задать вопросы до кода. Если всё ясно — сразу начинать.
 - [ ] B.1 `WordDiff: WordDiffing` — токены «слово / пробелы / пунктуация», `CollectionDifference`,
   склейка соседних сегментов одного вида. Тесты: равные тексты, вставка, удаление, замена,
   пунктуация, пустые строки, кириллица, эмодзи, перевод строки, инвариант `DiffSegment`.
@@ -85,6 +108,9 @@ Domain-протоколы не меняем. Общие для веток фай
 Файлы: `AIEditor/Features/Editor/*`, `AIEditorTests/Features/EditorViewModelTests.swift`,
 `AIEditorUITests/EditorUITests.swift`. Запуск: `scripts/sim.sh run -- -mockData -mockSlowStream`.
 
+- [ ] C.0 Прочитать свой подраздел UI-референса в `docs/task.md` (Editor) и скриншоты
+  `docs/reference/quillbot/editor/`. Коротко пересказать, как будет выглядеть и работать
+  результат. Если после этого что-то неясно — задать вопросы до кода. Если всё ясно — сразу начинать.
 - [ ] C.1 `EditorViewModel`: режим, тон/язык, исходник, счётчик слов, лимит длины,
   run / stop / retry / copy / read aloud / dictation; `observeEdit` + черновик `EditSession`;
   открытая из истории правка — её исходник, режим и результат. Тесты VM.
@@ -100,9 +126,11 @@ Domain-протоколы не меняем. Общие для веток фай
 ## 1. Слияние и связка (~45 мин) — `main`, последовательно
 
 - [ ] 1.1 Ревью каждой ветки субагентом с чистым контекстом; слияние A → B → C
-  (перед каждым — `git fetch`, `main` не ушёл вперёд, тесты зелёные).
+  (перед каждым — `git fetch`, `main` не ушёл вперёд, сборка зелёная + тесты сливаемой ветки).
 - [ ] 1.2 `AppContainer+Screens`: `PromptBuilder()` и `WordDiff()` вместо заглушек
   (TODO(plan 1.2)); экран — языки/тоны из A, Compare из B. Заглушки остаются только в тестах/превью.
+- [ ] 1.2a Полный прогон всех unit- и UI-тестов (`scripts/sim.sh test`) — первый после слияния
+  всех веток.
 - [ ] 1.3 Сквозной сценарий на реальной модели: каждое действие → история → перезапуск →
   открыть из истории → Compare → Copy.
 - [ ] 1.4 Ошибки и прерывания: `-mockOffline`, `-mockError 429|401|403|500`, Stop посреди стрима,
@@ -117,7 +145,8 @@ Domain-протоколы не меняем. Общие для веток фай
 
 ## 3. Проверка и сдача (30 мин)
 
-- [ ] 3.1 `NO_PAUSE=1 ./Build.command`; `scripts/sim.sh test` и `scripts/sim.sh --ios18 test`.
+- [ ] 3.1 `NO_PAUSE=1 ./Build.command`; полный прогон на iOS 26 и iOS 18: `scripts/sim.sh test`
+  и `scripts/sim.sh --ios18 test`.
 - [ ] 3.2 README: Сделано / Не сделано / Как проверяли. 👤 время финиша.
 - [ ] 3.3 `git grep -lE "gsk_[A-Za-z0-9]{20,}"` пусто; `python3 scripts/export_ai_logs.py` →
   «✓ ai-logs чистые» (+ логи Codex, если был); коммит.
