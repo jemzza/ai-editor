@@ -1,0 +1,107 @@
+name: AIEditor
+
+options:
+  bundleIdPrefix: com.example.aieditor
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+
+packages:
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    exactVersion: "7.11.1"
+
+targets:
+  AIEditor:
+    type: application
+    platform: iOS
+    sources:
+      - path: AIEditor
+        excludes:
+          - "**/.gitkeep"
+    dependencies:
+      - package: GRDB
+    info:
+      path: AIEditor/Info.plist
+      properties:
+        CFBundleDisplayName: AI Editor
+        # Свой тип для перетаскивания правки в папку (EditDragItem).
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: com.example.aieditor.edit-reference
+            UTTypeDescription: AI Editor edit
+            UTTypeConformsTo:
+              - public.data
+            UTTypeTagSpecification: {}
+        UILaunchScreen: {}
+        NSMicrophoneUsageDescription: Dictation uses the microphone to turn your speech into text. Audio is processed on this device and never saved.
+        NSSpeechRecognitionUsageDescription: Dictation turns your speech into text in the text field. It works on this device when your language supports it; otherwise speech is sent to Apple for recognition.
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.aieditor.app
+        # 6 — Mac Catalyst «Optimize for Mac»: родные размеры и элементы macOS.
+        TARGETED_DEVICE_FAMILY: "1,2,6"
+        SUPPORTS_MACCATALYST: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: Accent
+
+  AIEditorTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: AIEditorTests
+    dependencies:
+      - target: AIEditor
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.aieditor.tests
+        SUPPORTS_MACCATALYST: YES
+        GENERATE_INFOPLIST_FILE: YES
+
+  # UI-тесты: сценарии через настоящие алерты и меню (`-mockData`).
+  AIEditorUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: AIEditorUITests
+    dependencies:
+      - target: AIEditor
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.aieditor.uitests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  AIEditor:
+    build:
+      targets:
+        AIEditor: all
+        AIEditorTests: [test]
+        AIEditorUITests: [test]
+    test:
+      targets:
+        - AIEditorTests
+        - AIEditorUITests
