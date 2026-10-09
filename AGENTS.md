@@ -45,6 +45,10 @@ python3 scripts/sync_strings.py        # дописать новые ключи 
 python3 scripts/export_ai_logs.py      # выгрузить логи сессий в ai-logs/
 ```
 
+- **Python на этой машине:** первый в PATH `python3` (`/Library/Frameworks/…/3.12`) —
+  пустой файл: молча ничего не делает, `sim.sh` падает с `Invalid device:`. Все команды
+  выше запускай с `PATH="/opt/homebrew/bin:$PATH"` впереди, например
+  `PATH="/opt/homebrew/bin:$PATH" scripts/sim.sh build`. Сам Python не чини — это делает пользователь.
 - `AIEditor.xcodeproj` генерируется и не коммитится — правь только `project.yml`.
 - `Build.command` — для проверяющего (двойной клик). Агенты его не меняют; запускают только
   на финальной проверке: `NO_PAUSE=1 ./Build.command`.
