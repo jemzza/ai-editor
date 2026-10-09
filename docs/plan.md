@@ -41,11 +41,11 @@
 
 ## 0. Старт (≈ 5 мин) — `main`
 
-- [ ] 0.1 👤 Записать время старта в README. Ключ (если ещё не сгенерирован) — 👤 в отдельной
+- [x] 0.1 👤 Записать время старта в README. Ключ (если ещё не сгенерирован) — 👤 в отдельной
   вкладке терминала: `read -s GROQ_API_KEY && export GROQ_API_KEY; python3 scripts/gen_secrets.py; unset GROQ_API_KEY`.
   Агент ключ не запрашивает и скрипт сам не запускает. После «готово» агент запускает
   `scripts/sim.sh test -only-testing:AIEditorTests/SecretsTests`.
-- [ ] 0.2 Референсы QuillBot (в `main`, до создания worktree):
+- [x] 0.2 Референсы QuillBot (в `main`, до создания worktree):
   - 👤 пользователь кладёт скриншоты QuillBot в `docs/reference/quillbot/{prompts,diff,editor}/`;
   - агент просит скриншоты по каждой задаче и перечисляет, что снять:
     - `prompts` — список режимов и тонов (Standard, Fluency, Formal…), пример результата для
@@ -60,7 +60,7 @@
   - ответы пользователя записываются в `docs/task.md`, раздел «UI-референс», подразделы
     Prompts / Diff / Editor со ссылками на файлы скриншотов;
   - коммит: `Add QuillBot references and UI decisions`.
-- [ ] 0.3 Создать три worktree (AGENTS.md): `feat/prompts`, `feat/diff`, `feat/editor`;
+- [x] 0.3 Создать три worktree (AGENTS.md): `feat/prompts`, `feat/diff`, `feat/editor`;
   в каждом `scripts/sim.sh` создаёт свой симулятор. Не раньше, чем закоммичен 0.2.
 
 ## Параллельно (≈ 1 ч 45 мин, три агента, каждый в своём worktree)
